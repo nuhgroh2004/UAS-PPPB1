@@ -41,6 +41,10 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this, ProfilActivity::class.java)
             startActivity(intent)
         }
+        binding.btnRiwayat.setOnClickListener {
+            val intent = Intent(this, RiwayatActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupClickAnimation(imageView: ImageView, mood: String) {
