@@ -1,4 +1,3 @@
-// File: UserDao.kt
 package com.example.uaspppb1.Ui
 
 import androidx.room.Dao

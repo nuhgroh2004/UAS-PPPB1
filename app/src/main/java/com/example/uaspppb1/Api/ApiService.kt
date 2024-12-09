@@ -1,9 +1,9 @@
-// File: ApiService.kt
 package com.example.uaspppb1.Api
 
 import com.example.uaspppb1.Model.Mood
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -21,4 +21,10 @@ interface ApiService {
         @Path("table") table: String,
         @Body mood: Mood
     ): Call<Mood>
+    @DELETE("{database}/{table}/{id}")
+    fun deleteMood(
+        @Path("database") database: String,
+        @Path("table") table: String,
+        @Path("id") id: String
+    ): Call<Void>
 }

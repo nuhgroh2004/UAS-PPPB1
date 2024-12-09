@@ -1,4 +1,3 @@
-// File: RegisterActivity.kt
 package com.example.uaspppb1
 
 import android.content.Intent

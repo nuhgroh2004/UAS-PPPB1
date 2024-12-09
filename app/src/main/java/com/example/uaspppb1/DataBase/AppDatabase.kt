@@ -1,4 +1,3 @@
-// File: AppDatabase.kt
 package com.example.uaspppb1.DataBase
 
 import android.content.Context

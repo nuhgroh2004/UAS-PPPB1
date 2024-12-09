@@ -40,9 +40,9 @@ class RiwayatActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         moodAdapter = MoodAdapter(emptyList(), onEditClick = { mood ->
-            // Handle edit click
-        }, onDeleteClick = { mood ->
-            // Handle delete click
+
+        }, onDeleteClick = { moodId ->
+            deleteMood(moodId)
         })
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@RiwayatActivity)
@@ -58,25 +58,46 @@ class RiwayatActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val moodList = response.body()
                     if (!moodList.isNullOrEmpty()) {
-                        moodAdapter = MoodAdapter(moodList, onEditClick = { mood ->
-                            // Handle edit click
-                        }, onDeleteClick = { mood ->
-                            // Handle delete click
+
+                        val sortedMoodList = moodList.sortedByDescending { it.timestamp }
+                        moodAdapter = MoodAdapter(sortedMoodList, onEditClick = { mood ->
+
+                        }, onDeleteClick = { moodId ->
+                            deleteMood(moodId)
                         })
                         binding.recyclerView.adapter = moodAdapter
                     } else {
-                        Toast.makeText(this@RiwayatActivity, "No data available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@RiwayatActivity, "Tidak ada data", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e("RiwayatActivity", "Failed to fetch moods: ${response.errorBody()?.string()}")
-                    Toast.makeText(this@RiwayatActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
+                    Log.e("RiwayatActivity", "Gagal: ${response.errorBody()?.string()}")
+                    Toast.makeText(this@RiwayatActivity, "Gagal", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 Log.e("RiwayatActivity", "Error: ${t.message}")
-                Toast.makeText(this@RiwayatActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RiwayatActivity, "Jaringan error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun deleteMood(moodId: String) {
+        apiService.deleteMood("19B5K", "mood", moodId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@RiwayatActivity, "Berhasil menghapus", Toast.LENGTH_SHORT).show()
+                    fetchAllMoods()
+                } else {
+                    Log.e("RiwayatActivity", "Gagal: ${response.errorBody()?.string()}")
+                    Toast.makeText(this@RiwayatActivity, "Gagal", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("RiwayatActivity", "Error: ${t.message}")
+                Toast.makeText(this@RiwayatActivity, "Jaringan error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
