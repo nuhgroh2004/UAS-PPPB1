@@ -1,9 +1,10 @@
 // File: UserDao.kt
-package com.example.uaspppb1.DataBase
+package com.example.uaspppb1.Ui
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.uaspppb1.DataBase.User
 
 @Dao
 interface UserDao {
