@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginBottom="10dp"
+        android:background="#FFC462">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/picture1"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        android:padding="10dp"
+        android:gravity="center"
+        android:background="@drawable/rounded_background">
+
+        <!-- Mood Sedih -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/image_sedih"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="8dp"
+                android:src="@drawable/sedih" />
+
+            <TextView
+                android:id="@+id/text_sedih"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sedih"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- Mood Marah -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/image_marah"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="8dp"
+                android:src="@drawable/marah" />
+
+            <TextView
+                android:id="@+id/text_marah"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Marah"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- Mood Bahagia -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/image_bahagia"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="8dp"
+                android:src="@drawable/bahagia" />
+
+            <TextView
+                android:id="@+id/text_bahagia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bahagia"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_background"
+        android:gravity="center_vertical">
+
+        <!-- Bagian Teks (Waktu dan Perasaan) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingEnd="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:paddingEnd="16dp">
+
+                <!-- Waktu -->
+                <TextView
+                    android:id="@+id/text_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fri, Jul 26\n3:03 PM"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:lineSpacingExtra="2dp" />
+
+                <!-- Label Perasaan -->
+                <TextView
+                    android:id="@+id/text_label_feeling"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perasaan"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Nama Perasaan -->
+                <TextView
+                    android:id="@+id/text_feeling"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sedih"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/circle_placeholder"
+                android:layout_gravity="center">
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
+
+        <!-- Profil Section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_background"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:padding="8dp"
+                android:src="@drawable/picture_riwayat" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Riwayat"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Riwayat Section -->
+       <LinearLayout
+            android:id="@+id/profil_section"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_background"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:padding="8dp"
+            android:src="@drawable/picture_profil" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profil"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
