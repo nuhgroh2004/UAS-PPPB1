@@ -1,5 +1,7 @@
+// RiwayatActivity.kt
 package com.example.uaspppb1
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -40,7 +42,9 @@ class RiwayatActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         moodAdapter = MoodAdapter(emptyList(), onEditClick = { mood ->
-
+            val intent = Intent(this, EditMoodActivity::class.java)
+            intent.putExtra("MOOD_ID", mood.id)
+            startActivity(intent)
         }, onDeleteClick = { moodId ->
             deleteMood(moodId)
         })
@@ -58,10 +62,11 @@ class RiwayatActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val moodList = response.body()
                     if (!moodList.isNullOrEmpty()) {
-
                         val sortedMoodList = moodList.sortedByDescending { it.timestamp }
                         moodAdapter = MoodAdapter(sortedMoodList, onEditClick = { mood ->
-
+                            val intent = Intent(this@RiwayatActivity, EditMoodActivity::class.java)
+                            intent.putExtra("MOOD_ID", mood.id)
+                            startActivity(intent)
                         }, onDeleteClick = { moodId ->
                             deleteMood(moodId)
                         })
