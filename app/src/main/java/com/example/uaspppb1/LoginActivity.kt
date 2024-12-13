@@ -1,6 +1,7 @@
 // File: LoginActivity.kt
 package com.example.uaspppb1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -8,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.uaspppb1.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
