@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -27,4 +28,11 @@ interface ApiService {
         @Path("table") table: String,
         @Path("id") id: String
     ): Call<Void>
+    @POST("{database}/{table}/{id}")
+    fun updateMood(
+        @Path("database") database: String,
+        @Path("table") table: String,
+        @Path("id") id: String,
+        @Body mood: Map<String, String>
+    ): Call<Mood>
 }

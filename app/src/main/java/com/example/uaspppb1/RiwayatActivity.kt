@@ -1,4 +1,3 @@
-// RiwayatActivity.kt
 package com.example.uaspppb1
 
 import android.content.Intent
@@ -63,14 +62,7 @@ class RiwayatActivity : AppCompatActivity() {
                     val moodList = response.body()
                     if (!moodList.isNullOrEmpty()) {
                         val sortedMoodList = moodList.sortedByDescending { it.timestamp }
-                        moodAdapter = MoodAdapter(sortedMoodList, onEditClick = { mood ->
-                            val intent = Intent(this@RiwayatActivity, EditMoodActivity::class.java)
-                            intent.putExtra("MOOD_ID", mood.id)
-                            startActivity(intent)
-                        }, onDeleteClick = { moodId ->
-                            deleteMood(moodId)
-                        })
-                        binding.recyclerView.adapter = moodAdapter
+                        moodAdapter.updateData(sortedMoodList)
                     } else {
                         Toast.makeText(this@RiwayatActivity, "Tidak ada data", Toast.LENGTH_SHORT).show()
                     }
@@ -105,5 +97,9 @@ class RiwayatActivity : AppCompatActivity() {
                 Toast.makeText(this@RiwayatActivity, "Jaringan error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+    override fun onResume() {
+        super.onResume()
+        fetchAllMoods()
     }
 }

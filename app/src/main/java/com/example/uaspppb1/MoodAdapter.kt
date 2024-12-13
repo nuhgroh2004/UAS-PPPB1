@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.uaspppb1.Model.Mood
 
 class MoodAdapter(
-    private val moodList: List<Mood>,
+    private var moodList: List<Mood>,
     private val onEditClick: (Mood) -> Unit,
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<MoodAdapter.MoodViewHolder>() {
@@ -55,6 +55,11 @@ class MoodAdapter(
     }
 
     override fun getItemCount(): Int = moodList.size
+
+    fun updateData(newMoodList: List<Mood>) {
+        moodList = newMoodList
+        notifyDataSetChanged()
+    }
 
     private fun animateButton(imageView: ImageView, action: () -> Unit) {
         val scaleUp = ScaleAnimation(
