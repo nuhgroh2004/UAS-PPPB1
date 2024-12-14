@@ -9,10 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.uaspppb1.Api.ApiService
 import com.example.uaspppb1.Model.Mood
 import com.example.uaspppb1.databinding.ActivityRiwayatBinding
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,23 +55,32 @@ class RiwayatActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchAllMoods() {
-        binding.progressBar.visibility = View.VISIBLE
-        apiService.getAllData("19B5K", "mood").enqueue(object : Callback<List<Mood>> {
+   private fun fetchAllMoods() {
+    lifecycleScope.launch {
+        val userDao = (application as MyApp).getDatabase().userDao()
+        val user = userDao.getUser()
+        val idUser = user?.id_user ?: return@launch
+        val idRoom = "your_room_id"
+
+        Log.d("RiwayatActivity", "Fetching moods for user: $idUser in room: $idRoom")
+
+        apiService.getDataByUserIdAndRoom("19B5K", "mood", idUser, idRoom).enqueue(object : Callback<List<Mood>> {
             override fun onResponse(call: Call<List<Mood>>, response: Response<List<Mood>>) {
-                binding.progressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     val moodList = response.body()
-                    if (!moodList.isNullOrEmpty()) {
-                        val sortedMoodList = moodList.sortedByDescending { it.timestamp }
+                    val filteredMoodList = moodList?.filter { it.id_user == idUser }
+                    if (!filteredMoodList.isNullOrEmpty()) {
+                        val sortedMoodList = filteredMoodList.sortedByDescending { it.timestamp }
                         moodAdapter.updateData(sortedMoodList)
                     } else {
+                        Log.e("RiwayatActivity", "No moods found for the user in the specified room")
                         Toast.makeText(this@RiwayatActivity, "Tidak ada data", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e("RiwayatActivity", "Gagal: ${response.errorBody()?.string()}")
+                    Log.e("RiwayatActivity", "Failed to fetch moods: ${response.errorBody()?.string()}")
                     Toast.makeText(this@RiwayatActivity, "Gagal", Toast.LENGTH_SHORT).show()
                 }
+                binding.progressBar.visibility = View.GONE
             }
 
             override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
@@ -79,7 +90,7 @@ class RiwayatActivity : AppCompatActivity() {
             }
         })
     }
-
+}
     private fun deleteMood(moodId: String) {
         apiService.deleteMood("19B5K", "mood", moodId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {

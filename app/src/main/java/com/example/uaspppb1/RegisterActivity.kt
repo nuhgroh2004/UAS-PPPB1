@@ -31,7 +31,8 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.email.text.toString()
 
             if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()) {
-                val user = User(username = username, password = password, email = email)
+                val idUser = generateRandomId()
+                val user = User(id_user = idUser, username = username, password = password, email = email)
                 lifecycleScope.launch {
                     (application as MyApp).getDatabase().userDao().insert(user)
                     Toast.makeText(this@RegisterActivity, "Berhasil, pengguna baru terdaftar", Toast.LENGTH_SHORT).show()
@@ -45,4 +46,10 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    private fun generateRandomId(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        return (1..8)
+            .map { chars.random() }
+            .joinToString("")
+    }
 }

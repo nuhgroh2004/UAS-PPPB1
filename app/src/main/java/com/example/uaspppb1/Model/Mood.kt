@@ -7,10 +7,12 @@ import com.google.gson.annotations.SerializedName
 data class Mood(
     @SerializedName("_id") val id: String? = null,
     val mood: String,
-    val timestamp: String
+    val timestamp: String,
+    val id_user: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: ""
     )
@@ -19,6 +21,7 @@ data class Mood(
         parcel.writeString(id)
         parcel.writeString(mood)
         parcel.writeString(timestamp)
+        parcel.writeString(id_user)
     }
 
     override fun describeContents(): Int {

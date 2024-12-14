@@ -8,9 +8,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
 import com.example.uaspppb1.Api.ApiService
 import com.example.uaspppb1.Model.Mood
 import com.example.uaspppb1.databinding.ActivityHomeBinding
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,13 +51,13 @@ class HomeActivity : BaseActivity() {
     private fun setupClickAnimation(imageView: ImageView, mood: String) {
         imageView.setOnClickListener {
             val scaleUp = ScaleAnimation(
-                1f, 1.2f, // From X scale to X scale
-                1f, 1.2f, // From Y scale to Y scale
-                ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot X
-                ScaleAnimation.RELATIVE_TO_SELF, 0.5f  // Pivot Y
+                1f, 1.2f,
+                1f, 1.2f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f
             ).apply {
-                duration = 100 // Animation duration
-                fillAfter = true // Keep the final state
+                duration = 100
+                fillAfter = true
             }
 
             val scaleDown = ScaleAnimation(
@@ -64,7 +66,7 @@ class HomeActivity : BaseActivity() {
                 ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
                 ScaleAnimation.RELATIVE_TO_SELF, 0.5f
             ).apply {
-                startOffset = 100 // Start after scale up
+                startOffset = 100
                 duration = 100
                 fillAfter = true
             }
@@ -80,49 +82,63 @@ class HomeActivity : BaseActivity() {
             val dateFormat = SimpleDateFormat("EEE, MMM d\nh:mm a", indonesianLocale)
             dateFormat.dateFormatSymbols = dateFormatSymbols
             val timestamp = dateFormat.format(Date())
-            val newMood = Mood(mood = mood, timestamp = timestamp)
+            val newMood = Mood(mood = mood, timestamp = timestamp, id_user = "")
             Log.d("HomeActivity", "Posting mood: $newMood")
             postMood(newMood)
         }
     }
 
     private fun postMood(mood: Mood) {
-        // Ensure id is not sent
-        val moodWithoutId = Mood(mood = mood.mood, timestamp = mood.timestamp)
-        apiService.postData("19B5K", "mood", moodWithoutId).enqueue(object : Callback<Mood> {
-            override fun onResponse(call: Call<Mood>, response: Response<Mood>) {
-                if (response.isSuccessful) {
-                    Log.d("HomeActivity", "Mood posted successfully: ${response.body()}")
-                    fetchLatestMood()
-                } else {
-                    Log.e("HomeActivity", "Failed to post mood: ${response.errorBody()?.string()}")
-                }
-            }
+        lifecycleScope.launch {
+            val userDao = (application as MyApp).getDatabase().userDao()
+            val user = userDao.getUser()
+            val idUser = user?.id_user ?: return@launch
 
-            override fun onFailure(call: Call<Mood>, t: Throwable) {
-                Log.e("HomeActivity", "Error: ${t.message}")
-            }
-        })
+            val moodWithIdUser = Mood(mood = mood.mood, timestamp = mood.timestamp, id_user = idUser)
+            apiService.postData("19B5K", "mood", moodWithIdUser).enqueue(object : Callback<Mood> {
+                override fun onResponse(call: Call<Mood>, response: Response<Mood>) {
+                    if (response.isSuccessful) {
+                        Log.d("HomeActivity", "Mood posted successfully: ${response.body()}")
+                        fetchLatestMood()
+                    } else {
+                        Log.e("HomeActivity", "Failed to post mood: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<Mood>, t: Throwable) {
+                    Log.e("HomeActivity", "Error: ${t.message}")
+                }
+            })
+        }
     }
 
-    private fun fetchLatestMood() {
-        apiService.getAllData("19B5K", "mood").enqueue(object : Callback<List<Mood>> {
-            override fun onResponse(call: Call<List<Mood>>, response: Response<List<Mood>>) {
-                if (response.isSuccessful) {
-                    val moodList = response.body()
-                    if (!moodList.isNullOrEmpty()) {
-                        val latestMood = moodList.last()
-                        displayMood(latestMood)
-                    }
-                } else {
-                    Log.e("HomeActivity", "Failed to fetch moods: ${response.errorBody()?.string()}")
-                }
-            }
+   private fun fetchLatestMood() {
+        lifecycleScope.launch {
+            val userDao = (application as MyApp).getDatabase().userDao()
+            val user = userDao.getUser()
+            val idUser = user?.id_user ?: return@launch
 
-            override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
-                Log.e("HomeActivity", "Error: ${t.message}")
-            }
-        })
+            apiService.getDataByUserId("19B5K", "mood", idUser).enqueue(object : Callback<List<Mood>> {
+                override fun onResponse(call: Call<List<Mood>>, response: Response<List<Mood>>) {
+                    if (response.isSuccessful) {
+                        val moodList = response.body()
+                        val filteredMoodList = moodList?.filter { it.id_user == idUser }
+                        if (!filteredMoodList.isNullOrEmpty()) {
+                            val latestMood = filteredMoodList.last()
+                            displayMood(latestMood)
+                        } else {
+                            Log.e("HomeActivity", "No moods found for the user")
+                        }
+                    } else {
+                        Log.e("HomeActivity", "Failed to fetch moods: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
+                    Log.e("HomeActivity", "Error: ${t.message}")
+                }
+            })
+        }
     }
 
     private fun displayMood(mood: Mood) {

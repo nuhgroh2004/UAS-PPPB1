@@ -7,9 +7,11 @@ import android.view.animation.ScaleAnimation
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.uaspppb1.Api.ApiService
 import com.example.uaspppb1.Model.Mood
 import com.example.uaspppb1.databinding.ActivityEditMoodBinding
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,23 +54,37 @@ class EditMoodActivity : AppCompatActivity() {
     }
 
     private fun fetchMoodDetails(moodId: String) {
-        apiService.getAllData("19B5K", "mood").enqueue(object : Callback<List<Mood>> {
-            override fun onResponse(call: Call<List<Mood>>, response: Response<List<Mood>>) {
-                if (response.isSuccessful) {
-                    // Handle successful response
-                } else {
-                    Log.e("EditMoodActivity", "Gagal: ${response.errorBody()?.string()}")
-                    Toast.makeText(this@EditMoodActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val userDao = (application as MyApp).getDatabase().userDao()
+            val user = userDao.getUser()
+            val idUser = user?.id_user ?: return@launch
+
+            apiService.getDataByUserId("19B5K", "mood", idUser).enqueue(object : Callback<List<Mood>> {
+                override fun onResponse(call: Call<List<Mood>>, response: Response<List<Mood>>) {
+                    if (response.isSuccessful) {
+                        val moodList = response.body()
+                        val mood = moodList?.find { it.id == moodId }
+                        if (mood != null) {
+
+                        } else {
+                            Log.e("EditMoodActivity", "Mood tidak ditemukan")
+                            Toast.makeText(this@EditMoodActivity, "Mood tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                    } else {
+                        Log.e("EditMoodActivity", "Gagal: ${response.errorBody()?.string()}")
+                        Toast.makeText(this@EditMoodActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
+                    Log.e("EditMoodActivity", "Error: ${t.message}")
+                    Toast.makeText(this@EditMoodActivity, "Jaringan error: ${t.message}", Toast.LENGTH_SHORT).show()
                     finish()
                 }
-            }
-
-            override fun onFailure(call: Call<List<Mood>>, t: Throwable) {
-                Log.e("EditMoodActivity", "Error: ${t.message}")
-                Toast.makeText(this@EditMoodActivity, "Jaringan error: ${t.message}", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        })
+            })
+        }
     }
 
     private fun updateMood(moodId: String, newMood: String) {
@@ -96,17 +112,14 @@ class EditMoodActivity : AppCompatActivity() {
     }
 
     private fun setupMoodSelection() {
-    val moodViews = listOf(binding.editImageSedih, binding.editImageMarah, binding.editImageBahagia)
+        val moodViews = listOf(binding.editImageSedih, binding.editImageMarah, binding.editImageBahagia)
 
         moodViews.forEach { imageView ->
             imageView.setOnClickListener {
-                // Reset background for all mood views
                 moodViews.forEach { it.setBackgroundResource(0) }
 
-                // Set selected background for the clicked view
                 imageView.setBackgroundResource(R.drawable.selected_background)
 
-                // Set selected mood string
                 selectedMoodString = when (imageView.id) {
                     R.id.edit_image_sedih -> "Sedih"
                     R.id.edit_image_marah -> "Marah"
@@ -114,18 +127,16 @@ class EditMoodActivity : AppCompatActivity() {
                     else -> null
                 }
 
-                // Show toast message
                 Toast.makeText(this, "Mood $selectedMoodString dipilih", Toast.LENGTH_SHORT).show()
 
-                // Apply click animation
                 val scaleUp = ScaleAnimation(
-                    1f, 1.2f, // From X scale to X scale
-                    1f, 1.2f, // From Y scale to Y scale
-                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f, // Pivot X
-                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f  // Pivot Y
+                    1f, 1.2f,
+                    1f, 1.2f,
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                    ScaleAnimation.RELATIVE_TO_SELF, 0.5f
                 ).apply {
-                    duration = 100 // Animation duration
-                    fillAfter = true // Keep the final state
+                    duration = 100
+                    fillAfter = true
                 }
 
                 val scaleDown = ScaleAnimation(
@@ -134,7 +145,7 @@ class EditMoodActivity : AppCompatActivity() {
                     ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
                     ScaleAnimation.RELATIVE_TO_SELF, 0.5f
                 ).apply {
-                    startOffset = 100 // Start after scale up
+                    startOffset = 100
                     duration = 100
                     fillAfter = true
                 }
